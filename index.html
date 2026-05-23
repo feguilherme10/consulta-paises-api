@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Paises</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+ 
+<body>
+ 
+    <div class="container">
+        <h1>Consulta de Paises</h1>
+        <input type="text" id="countryInput" placeholder="Digite o nome do país">
+        <button id="searchButton">Pesquisar</button>
+        <div id="result"></div>
+    </div>
+ 
+ 
+    <script>
+ 
+        const btnConsulta = document.getElementById("searchButton");
+        const nomePais = document.getElementById('countryInput');
+ 
+        btnConsulta.addEventListener('click', () => {
+            const nome = nomePais.value.trim();
+            buscaPais(nome);
+        });
+ 
+ 
+        async function buscaPais(nome) {
+ 
+            const pais = await fetch(`https://restcountries.com/v3.1/name/${nome}`);
+            const data = await pais.json();
+ 
+            console.log(data);
+            const resultDiv = document.getElementById('result');
+ 
+ 
+            if (data.status === 404) {
+                resultDiv.innerHTML = `<p>País não encontrado. Por favor, tente novamente.</p>`;
+                return;
+            }
+ 
+            resultDiv.innerHTML = `
+                <h2>${data[0].name.common}</h2>
+                <p><strong>Capital:</strong> ${data[0].capital[0]}</p>
+                <p><strong>Região:</strong> ${data[0].region}</p>
+                <p><strong>Continente:</strong> ${data[0].continents[0]}</p>
+                <p><strong>População:</strong> ${data[0].population.toLocaleString()}</p>
+                <p><strong>Área:</strong> ${data[0].area.toLocaleString()} km²</p>
+                <p><strong>Moeda:</strong> ${data[0].currencies[Object.keys(data[0].currencies)[0]].name} (${data[0].currencies[Object.keys(data[0].currencies)[0]].symbol})</p>
+                <p><strong>Idioma:</strong> ${data[0].languages[Object.keys(data[0].languages)[0]]}</p>
+                <p><strong>Fuso Horário:</strong> ${data[0].timezones[0]}</p>
+                <p><strong>Código de Área:</strong> ${data[0].idd.root}${data[0].idd.suffixes[0]}</p>
+                <img src="${data[0].flags.png}" alt="Bandeira de ${data[0].name.common}" width="200">
+            `;
+        }
+ 
+    </script>
+ 
+</body>
+ 
+</html>
+ 
